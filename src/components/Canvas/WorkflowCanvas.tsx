@@ -98,12 +98,12 @@ const WorkflowCanvas = ({
   // MiniMap node color coding
   const minimapNodeColor = (node: Node) => {
     switch (node.type) {
-      case 'start': return '#22c55e';
-      case 'task': return '#3b82f6';
-      case 'approval': return '#f59e0b';
-      case 'automated': return '#a855f7';
-      case 'end': return '#ef4444';
-      default: return '#64748b';
+      case 'start': return '#12b76a';
+      case 'task': return '#2970ff';
+      case 'approval': return '#f79009';
+      case 'automated': return '#7a5af8';
+      case 'end': return '#f04438';
+      default: return '#98a2b3';
     }
   };
 
@@ -130,11 +130,11 @@ const WorkflowCanvas = ({
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         connectionLineType={ConnectionLineType.SmoothStep}
-        connectionLineStyle={{ stroke: '#94a3b8', strokeWidth: 2 }}
+        connectionLineStyle={{ stroke: 'var(--edge-color)', strokeWidth: 2 }}
         defaultEdgeOptions={{
           type: 'smart',
           animated: false,
-          style: { stroke: '#94a3b8', strokeWidth: 2 },
+          style: { stroke: 'var(--edge-color)', strokeWidth: 2 },
         }}
         fitView
         fitViewOptions={{ padding: 0.2, minZoom: 0.5, maxZoom: 1 }}
@@ -147,7 +147,7 @@ const WorkflowCanvas = ({
           variant={BackgroundVariant.Dots}
           gap={12}
           size={1.5}
-          color="#cbd5e1"
+          color="var(--bg-dots)"
         />
         <Controls
           showInteractive={false}
@@ -155,7 +155,7 @@ const WorkflowCanvas = ({
         />
         <MiniMap
           nodeColor={minimapNodeColor}
-          maskColor="rgba(240, 240, 240, 0.5)"
+          maskColor="rgba(0, 0, 0, 0.1)"
           className="canvas-minimap"
           pannable
           zoomable

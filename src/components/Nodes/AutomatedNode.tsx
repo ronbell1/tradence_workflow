@@ -47,7 +47,7 @@ const AutomatedNode = memo(({ id, data, selected }: NodeProps) => {
         </div>
       )}
       <Handle type="target" position={Position.Top} className="handle-target" />
-      <div className="node-icon"><Zap size={16} color="#8b5cf6" /></div>
+      <div className="node-icon"><Zap size={16} color="var(--node-automated)" /></div>
       <div className="node-content">
         <div className="node-type-label">AUTOMATED</div>
         <div className="node-title">{nodeData.title || 'Untitled Action'}</div>

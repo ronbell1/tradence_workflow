@@ -37,7 +37,7 @@ const TaskNode = memo(({ id, data, selected }: NodeProps) => {
         </div>
       )}
       <Handle type="target" position={Position.Top} className="handle-target" />
-      <div className="node-icon"><ClipboardList size={16} color="#3b82f6" /></div>
+      <div className="node-icon"><ClipboardList size={16} color="var(--node-task)" /></div>
       <div className="node-content">
         <div className="node-type-label">TASK</div>
         <div className="node-title">{nodeData.title || 'Untitled Task'}</div>

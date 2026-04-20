@@ -5,11 +5,11 @@ import { v4 as uuidv4 } from 'uuid';
 import type { NodeType } from '../../types/nodes';
 
 const NODE_OPTIONS: { type: NodeType; icon: React.ReactNode; color: string; label: string }[] = [
-  { type: 'task', icon: <ClipboardList size={16} color="#3b82f6" />, color: '#3b82f6', label: 'Task' },
-  { type: 'approval', icon: <UserCheck size={16} color="#f59e0b" />, color: '#f59e0b', label: 'Approval' },
-  { type: 'decision', icon: <Split size={16} color="#f97316" />, color: '#f97316', label: 'Decision' },
-  { type: 'automated', icon: <Zap size={16} color="#8b5cf6" />, color: '#8b5cf6', label: 'Automated' },
-  { type: 'end', icon: <StopCircle size={16} color="#ef4444" />, color: '#ef4444', label: 'End' },
+  { type: 'task', icon: <ClipboardList size={16} color="#2970ff" />, color: '#2970ff', label: 'Task' },
+  { type: 'approval', icon: <UserCheck size={16} color="#f79009" />, color: '#f79009', label: 'Approval' },
+  { type: 'decision', icon: <Split size={16} color="#ee6723" />, color: '#ee6723', label: 'Decision' },
+  { type: 'automated', icon: <Zap size={16} color="#7a5af8" />, color: '#7a5af8', label: 'Automated' },
+  { type: 'end', icon: <StopCircle size={16} color="#f04438" />, color: '#f04438', label: 'End' },
 ];
 
 interface QuickAddToolbarProps {
@@ -55,7 +55,7 @@ export default function QuickAddToolbar({ nodeId, isVisible, sourceHandleId }: Q
       target: newNodeId,
       type: 'smart',
       animated: false,
-      style: { stroke: '#94a3b8', strokeWidth: 2 },
+      style: { stroke: 'var(--edge-color)', strokeWidth: 2 },
     };
 
     // Add node and edge

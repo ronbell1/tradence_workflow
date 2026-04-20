@@ -33,7 +33,7 @@ const EndNode = memo(({ id, data, selected }: NodeProps) => {
         </div>
       )}
       <Handle type="target" position={Position.Top} className="handle-target" />
-      <div className="node-icon"><StopCircle size={16} color="#ef4444" /></div>
+      <div className="node-icon"><StopCircle size={16} color="var(--node-end)" /></div>
       <div className="node-content">
         <div className="node-type-label">END</div>
         <div className="node-title">{nodeData.endMessage || 'End'}</div>

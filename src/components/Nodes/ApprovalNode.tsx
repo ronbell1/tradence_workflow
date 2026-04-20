@@ -35,7 +35,7 @@ const ApprovalNode = memo(({ id, data, selected }: NodeProps) => {
         </div>
       )}
       <Handle type="target" position={Position.Top} className="handle-target" />
-      <div className="node-icon"><UserCheck size={16} color="#f59e0b" /></div>
+      <div className="node-icon"><UserCheck size={16} color="var(--node-approval)" /></div>
       <div className="node-content">
         <div className="node-type-label">APPROVAL</div>
         <div className="node-title">{nodeData.title || 'Untitled Approval'}</div>

@@ -12,7 +12,7 @@ import DashboardPanel from './components/Dashboard/DashboardPanel';
 import KeyboardHelp from './components/KeyboardHelp/KeyboardHelp';
 import { useToast } from './components/Toast/ToastProvider';
 import { validateWorkflow } from './utils/graphValidation';
-import { Workflow, Undo2, Redo2, LayoutTemplate, Save, FolderOpen, FlaskConical, X, Wand2, Trash2, Copy, Link2, BarChart3, Keyboard, HardDriveDownload, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { Workflow, Undo2, Redo2, LayoutTemplate, Save, FolderOpen, FlaskConical, X, Wand2, Trash2, Copy, Link2, BarChart3, Keyboard, HardDriveDownload, CheckCircle2, XCircle, AlertTriangle, Moon, Sun } from 'lucide-react';
 import { workflowTemplates } from './data/templates';
 import './App.css';
 
@@ -52,6 +52,26 @@ function AppContent() {
   const [showDashboard, setShowDashboard] = useState(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Theme Management
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('hr-theme');
+    if (saved === 'dark' || saved === 'light') return saved;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('hr-theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('theme-dark');
+    } else {
+      document.documentElement.classList.remove('theme-dark');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   // Validation summary
   const validation = validateWorkflow(nodes, edges);
@@ -226,6 +246,13 @@ function AppContent() {
         </div>
 
         <div className="header-right">
+          <button
+            onClick={toggleTheme}
+            className="btn-toolbar"
+            title="Toggle Theme"
+          >
+            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
           <button
             onClick={() => setShowKeyboardHelp(true)}
             className="btn-toolbar"

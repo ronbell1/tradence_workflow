@@ -32,7 +32,7 @@ const StartNode = memo(({ id, data, selected }: NodeProps) => {
           {hasErrors ? '!' : '⚠'}
         </div>
       )}
-      <div className="node-icon"><CirclePlay size={16} color="#22c55e" /></div>
+      <div className="node-icon"><CirclePlay size={16} color="var(--node-start)" /></div>
       <div className="node-content">
         <div className="node-type-label">START</div>
         <div className="node-title">{nodeData.title || 'Start'}</div>
