@@ -30,6 +30,8 @@ const createDefaultNodeData = (type: NodeType): WorkflowNodeData => {
         description: '',
         assignee: '',
         dueDate: '',
+        slaHours: undefined,
+        checklist: [],
         customFields: [],
       };
     case 'approval':
@@ -38,6 +40,7 @@ const createDefaultNodeData = (type: NodeType): WorkflowNodeData => {
         title: '',
         approverRole: '',
         autoApproveThreshold: undefined,
+        slaHours: undefined,
       };
     case 'automated':
       return { type: 'automated', title: '', actionId: '', actionParams: {} };

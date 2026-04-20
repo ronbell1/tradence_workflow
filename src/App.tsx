@@ -8,7 +8,8 @@ import WorkflowCanvas from './components/Canvas/WorkflowCanvas';
 import NodePalette from './components/Sidebar/NodePalette';
 import NodeFormPanel from './components/NodeForms/NodeFormPanel';
 import SimulationPanel from './components/Sandbox/SimulationPanel';
-import { Workflow, Undo2, Redo2, LayoutTemplate, Save, FolderOpen, FlaskConical, X, Wand2, Trash2, Copy, Link2 } from 'lucide-react';
+import { Workflow, Undo2, Redo2, LayoutTemplate, Save, FolderOpen, FlaskConical, X, Wand2, Trash2, Copy, Link2, BarChart3 } from 'lucide-react';
+import DashboardPanel from './components/Dashboard/DashboardPanel';
 import { workflowTemplates } from './data/templates';
 import './App.css';
 
@@ -44,6 +45,7 @@ function AppContent() {
 
   const [showSimulation, setShowSimulation] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Keyboard shortcuts: Ctrl+Z (undo), Ctrl+Y (redo)
@@ -184,6 +186,13 @@ function AppContent() {
 
         <div className="header-right">
           <button
+            onClick={() => setShowDashboard(true)}
+            className="btn-toolbar"
+            title="Dashboard & Analytics"
+          >
+            <BarChart3 size={16} /> Dashboard
+          </button>
+          <button
             onClick={() => setShowSimulation(!showSimulation)}
             className={`btn-simulate ${showSimulation ? 'active' : ''}`}
           >
@@ -271,6 +280,9 @@ function AppContent() {
           )}
         </aside>
       </div>
+
+      {/* Dashboard Modal */}
+      <DashboardPanel isOpen={showDashboard} onClose={() => setShowDashboard(false)} />
     </div>
   );
 }

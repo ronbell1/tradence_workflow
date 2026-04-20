@@ -1,15 +1,16 @@
 // components/Nodes/ApprovalNode.tsx — Custom Approval Node component
-// ✅ Manager/HR approval step — amber/yellow accent
+// Manager/HR approval step — amber/yellow accent with SLA tracking
 
 import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { UserCheck, Key, Zap, TriangleAlert } from 'lucide-react';
+import { UserCheck, Key, Zap, Clock } from 'lucide-react';
 import QuickAddToolbar from './QuickAddToolbar';
 
 interface ApprovalNodeDataType {
   title?: string;
   approverRole?: string;
   autoApproveThreshold?: number;
+  slaHours?: number;
   validationErrors?: string[];
   validationWarnings?: string[];
   isSimulating?: boolean;
@@ -30,7 +31,7 @@ const ApprovalNode = memo(({ id, data, selected }: NodeProps) => {
         <div className="node-validation-badge" title={
           [...(nodeData.validationErrors || []), ...(nodeData.validationWarnings || [])].join('\n')
         }>
-          {hasErrors ? <TriangleAlert size={14} /> : '⚠'}
+          {hasErrors ? '!' : '\u26a0'}
         </div>
       )}
       <Handle type="target" position={Position.Top} className="handle-target" />
@@ -50,6 +51,11 @@ const ApprovalNode = memo(({ id, data, selected }: NodeProps) => {
         {nodeData.autoApproveThreshold !== undefined && nodeData.autoApproveThreshold > 0 && (
           <div className="node-meta">
             <span className="meta-icon"><Zap size={12} /></span> Auto-approve: ≥{nodeData.autoApproveThreshold}
+          </div>
+        )}
+        {nodeData.slaHours && nodeData.slaHours > 0 && (
+          <div className="node-meta node-sla">
+            <span className="meta-icon"><Clock size={10} /></span> SLA: {nodeData.slaHours}h
           </div>
         )}
       </div>

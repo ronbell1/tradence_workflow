@@ -19,6 +19,8 @@ export interface TaskNodeData {
   description?: string;
   assignee: string;
   dueDate: string;
+  slaHours?: number;
+  checklist?: string[];
   customFields: KeyValuePair[];
 }
 
@@ -26,6 +28,7 @@ export interface ApprovalNodeData {
   title: string;
   approverRole: string; // "Manager" | "HRBP" | "Director" or free text
   autoApproveThreshold?: number;
+  slaHours?: number;
 }
 
 export interface AutomatedNodeData {

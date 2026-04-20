@@ -100,6 +100,20 @@ const ApprovalForm = ({ nodeId, data, onChange, onDelete }: ApprovalFormProps) =
         </span>
       </div>
 
+      <div className="form-group">
+        <label htmlFor={`approval-sla-${nodeId}`}>SLA Deadline (hours)</label>
+        <input
+          id={`approval-sla-${nodeId}`}
+          type="number"
+          min="0"
+          value={(data as any).slaHours || ''}
+          onChange={(e) => handleChange('slaHours', parseInt(e.target.value) || 0)}
+          placeholder="e.g., 48"
+          className="form-input"
+        />
+        <span className="form-hint">Time allowed before escalation</span>
+      </div>
+
       <div className="form-actions">
         <button onClick={() => onDelete(nodeId)} className="btn-danger">
           Delete Node

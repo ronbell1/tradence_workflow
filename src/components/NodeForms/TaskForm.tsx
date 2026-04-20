@@ -1,10 +1,10 @@
 // components/NodeForms/TaskForm.tsx — Task Node configuration form
-// Controlled component with key-value custom fields
+// Controlled component with SLA tracking, checklist, and key-value custom fields
 
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { KeyValuePair } from '../../types/nodes';
-import { ClipboardList, X } from 'lucide-react';
+import { ClipboardList, X, Plus, Minus } from 'lucide-react';
 
 interface TaskFormProps {
   nodeId: string;
@@ -13,6 +13,8 @@ interface TaskFormProps {
     description?: string;
     assignee?: string;
     dueDate?: string;
+    slaHours?: number;
+    checklist?: string[];
     customFields?: KeyValuePair[];
   };
   onChange: (nodeId: string, data: Record<string, unknown>) => void;
@@ -23,8 +25,9 @@ const TaskForm = ({ nodeId, data, onChange, onDelete }: TaskFormProps) => {
   const [customFields, setCustomFields] = useState<KeyValuePair[]>(
     data.customFields || []
   );
+  const [checklist, setChecklist] = useState<string[]>(data.checklist || []);
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | number) => {
     onChange(nodeId, { [field]: value });
   };
 
@@ -47,6 +50,25 @@ const TaskForm = ({ nodeId, data, onChange, onDelete }: TaskFormProps) => {
     );
     setCustomFields(updated);
     onChange(nodeId, { customFields: updated });
+  };
+
+  const addChecklistItem = () => {
+    const updated = [...checklist, ''];
+    setChecklist(updated);
+    onChange(nodeId, { checklist: updated });
+  };
+
+  const removeChecklistItem = (index: number) => {
+    const updated = checklist.filter((_, i) => i !== index);
+    setChecklist(updated);
+    onChange(nodeId, { checklist: updated });
+  };
+
+  const handleChecklistChange = (index: number, val: string) => {
+    const updated = [...checklist];
+    updated[index] = val;
+    setChecklist(updated);
+    onChange(nodeId, { checklist: updated });
   };
 
   return (
@@ -98,6 +120,20 @@ const TaskForm = ({ nodeId, data, onChange, onDelete }: TaskFormProps) => {
       </div>
 
       <div className="form-group">
+        <label htmlFor={`task-sla-${nodeId}`}>SLA Deadline (hours)</label>
+        <input
+          id={`task-sla-${nodeId}`}
+          type="number"
+          min="0"
+          value={data.slaHours || ''}
+          onChange={(e) => handleChange('slaHours', parseInt(e.target.value) || 0)}
+          placeholder="e.g., 24"
+          className="form-input"
+        />
+        <span className="form-hint">Time allowed before escalation</span>
+      </div>
+
+      <div className="form-group">
         <label htmlFor={`task-desc-${nodeId}`}>Description</label>
         <textarea
           id={`task-desc-${nodeId}`}
@@ -107,6 +143,31 @@ const TaskForm = ({ nodeId, data, onChange, onDelete }: TaskFormProps) => {
           className="form-textarea"
           rows={3}
         />
+      </div>
+
+      <div className="form-group">
+        <label>Checklist</label>
+        {checklist.map((item, i) => (
+          <div key={i} className="kv-row">
+            <input
+              type="text"
+              value={item}
+              onChange={(e) => handleChecklistChange(i, e.target.value)}
+              placeholder={`Item ${i + 1}`}
+              className="form-input kv-input"
+            />
+            <button
+              onClick={() => removeChecklistItem(i)}
+              className="btn-icon btn-danger"
+              title="Remove"
+            >
+              <Minus size={14} />
+            </button>
+          </div>
+        ))}
+        <button onClick={addChecklistItem} className="btn-secondary btn-sm">
+          <Plus size={12} /> Add Checklist Item
+        </button>
       </div>
 
       <div className="form-group">
