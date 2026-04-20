@@ -1,18 +1,28 @@
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { GitBranch, TriangleAlert } from 'lucide-react';
+import { TriangleAlert } from 'lucide-react';
 import QuickAddToolbar from './QuickAddToolbar';
 
-
+const OPERATOR_LABELS: Record<string, string> = {
+  equals: '==',
+  not_equals: '!=',
+  greater_than: '>',
+  less_than: '<',
+  contains: '∋',
+};
 
 const DecisionNode = ({ id, data, selected }: NodeProps) => {
   const nodeData = data as any;
   const hasErrors = nodeData.validationErrors && nodeData.validationErrors.length > 0;
 
+  const conditionPreview = nodeData.conditionVariable
+    ? `${nodeData.conditionVariable} ${OPERATOR_LABELS[nodeData.conditionOperator] || '=='} ${nodeData.conditionValue || '?'}`
+    : null;
+
   return (
     <div
-      className={`workflow-node decision-node ${selected ? 'selected' : ''} ${
+      className={`workflow-node decision-node decision-diamond ${selected ? 'selected' : ''} ${
         nodeData.isSimulating ? 'simulating' : ''
-      }`}
+      } ${hasErrors ? 'has-errors' : ''}`}
     >
       <Handle
         type="target"
@@ -22,23 +32,28 @@ const DecisionNode = ({ id, data, selected }: NodeProps) => {
       />
 
       {hasErrors && (
-        <div className="node-validation-badge" title={nodeData.validationErrors![0]}>
+        <div className="node-validation-badge" title={
+          (nodeData.validationErrors || []).join('\n')
+        }>
           <TriangleAlert size={12} />
         </div>
       )}
 
-      <div className="node-content">
-        <span className="node-type-label">Decision</span>
-        <span className="node-title">{nodeData.title || 'Condition'}</span>
-        
-        {nodeData.conditionVariable && (
-          <div className="node-meta">
-            <span className="meta-icon"><GitBranch size={10} color="#f97316" /></span>
-            <span>If {nodeData.conditionVariable}</span>
-          </div>
-        )}
+      <div className="decision-diamond-inner">
+        <div className="node-content">
+          <span className="node-type-label">DECISION</span>
+          <span className="node-title">{nodeData.title || 'Condition'}</span>
+          
+          {conditionPreview && (
+            <div className="node-condition-preview">
+              {conditionPreview}
+            </div>
+          )}
+        </div>
       </div>
 
+      {/* Yes (True) handle — left */}
+      <div className="decision-branch-label decision-branch-yes">Yes</div>
       <Handle
         type="source"
         position={Position.Bottom}
@@ -47,6 +62,9 @@ const DecisionNode = ({ id, data, selected }: NodeProps) => {
         style={{ left: '25%', background: '#22c55e' }}
         isConnectable={true}
       />
+
+      {/* No (False) handle — right */}
+      <div className="decision-branch-label decision-branch-no">No</div>
       <Handle
         type="source"
         position={Position.Bottom}

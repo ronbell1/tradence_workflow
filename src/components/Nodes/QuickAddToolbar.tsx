@@ -19,7 +19,7 @@ interface QuickAddToolbarProps {
 }
 
 export default function QuickAddToolbar({ nodeId, isVisible, sourceHandleId }: QuickAddToolbarProps) {
-  const { setNodes, setEdges, getNode } = useReactFlow();
+  const { setNodes, setEdges, getNode, setCenter, getZoom } = useReactFlow();
 
   const onAddNode = (type: NodeType) => {
     const parentNode = getNode(nodeId);
@@ -61,6 +61,11 @@ export default function QuickAddToolbar({ nodeId, isVisible, sourceHandleId }: Q
     // Add node and edge
     setNodes((ns) => ns.map(n => ({...n, selected: false})).concat(newNode as any));
     setEdges((es) => es.concat(newEdge as any));
+
+    // Smoothly pan to newly added node
+    setTimeout(() => {
+      setCenter(newNode.position.x + 80, newNode.position.y + 40, { zoom: getZoom(), duration: 800 });
+    }, 50);
   };
 
   return (

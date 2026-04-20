@@ -163,6 +163,15 @@ body {
   gap: 8px;
 }
 
+.btn-toolbar.action-danger {
+  color: #ef4444;
+}
+
+.btn-toolbar.action-danger:hover:not(:disabled) {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
 .toolbar-divider {
   width: 1px;
   height: 24px;
@@ -708,13 +717,88 @@ body {
 .task-node { border: 1px solid rgba(59, 130, 246, 0.3); border-left: 4px solid var(--node-task); }
 .approval-node { border: 1px solid rgba(245, 158, 11, 0.3); border-left: 4px solid var(--node-approval); }
 .automated-node { border: 1px solid rgba(139, 92, 246, 0.3); border-left: 4px solid var(--node-automated); }
-.decision-node { border: 1px solid rgba(249, 115, 22, 0.3); border-left: 4px solid #f97316; }
+.decision-node {
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  border-left: 4px solid #f97316;
+}
+
+/* Decision diamond shape */
+.decision-diamond {
+  min-width: 160px;
+  max-width: 200px;
+  background: var(--bg-elevated);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  padding: 28px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none !important;
+  border-left: none !important;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.12);
+}
+
+.decision-diamond .node-content {
+  text-align: center;
+  align-items: center;
+}
+
+.decision-diamond .node-validation-badge {
+  top: 4px;
+  right: calc(50% - 10px);
+}
+
+.decision-diamond-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.node-condition-preview {
+  font-size: 9px;
+  font-family: 'SF Mono', 'Consolas', monospace;
+  color: #f97316;
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  border-radius: 3px;
+  padding: 2px 6px;
+  margin-top: 4px;
+  word-break: break-all;
+  max-width: 110px;
+}
+
+.decision-branch-label {
+  position: absolute;
+  bottom: -18px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
+.decision-branch-yes {
+  left: 15%;
+  color: #22c55e;
+}
+
+.decision-branch-no {
+  right: 15%;
+  color: #ef4444;
+}
+
 .end-node { border: 1px solid rgba(239, 68, 68, 0.3); border-left: 4px solid var(--node-end); }
 
-/* Simulating state — pulse animation removed */
+.decision-node .node-type-label { color: #f97316; }
+
+/* Simulating state — green glow */
 .workflow-node.simulating {
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 2px var(--accent-glow);
+  border-color: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25), 0 0 16px rgba(34, 197, 94, 0.15);
+  animation: sim-glow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes sim-glow {
+  from { box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25), 0 0 16px rgba(34, 197, 94, 0.15); }
+  to { box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.35), 0 0 24px rgba(34, 197, 94, 0.25); }
 }
 
 /* Error state */
@@ -1411,4 +1495,30 @@ body {
 
 .react-flow__pane {
   cursor: default;
+}
+
+.empty-canvas-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.empty-canvas-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0;
+}
+
+.empty-canvas-state p {
+  font-size: 1rem;
+  margin: 0;
 }

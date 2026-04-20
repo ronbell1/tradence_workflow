@@ -97,15 +97,17 @@ export const useWorkflow = () => {
   // Add a new node to the canvas at specified position
   const addNode = useCallback(
     (type: NodeType, position: { x: number; y: number }) => {
-      const id = uuidv4();
+      const id = `${type}-${uuidv4().slice(0, 8)}`;
       const nodeData = createDefaultNodeData(type);
       const newNode: Node = {
         id,
         type,
         position,
         data: nodeData as unknown as Record<string, unknown>,
+        selected: true,
       };
-      setNodes((nds) => [...nds, newNode]);
+
+      setNodes((nds) => nds.map(n => ({...n, selected: false})).concat(newNode as any));
       setSelectedNodeId(id);
       return id;
     },
@@ -304,26 +306,80 @@ export const useWorkflow = () => {
       // Duplicate Node Ctrl+D
       if (e.ctrlKey && (e.key === 'd' || e.key === 'D')) {
         e.preventDefault();
-        const selectedNodeObj = nodes.find(n => n.id === selectedNodeId);
-        if (selectedNodeObj) {
-           const newId = `${selectedNodeObj.type}-${uuidv4().slice(0, 8)}`;
-           const duplicatedNode: Node = {
-             ...selectedNodeObj,
-             id: newId,
-             position: { x: selectedNodeObj.position.x + 50, y: selectedNodeObj.position.y + 50 },
-             selected: true
-           };
-           setNodes(nds => nds.map(n => ({...n, selected: false})).concat(duplicatedNode as any));
-           setSelectedNodeId(newId);
-        }
+        duplicateSelectedNode();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [nodes, edges, selectedNodeId, setNodes, applyAutoLayout, clipboard]);
 
+  const duplicateSelectedNode = useCallback(() => {
+    if (!selectedNodeId) return;
+    const selectedNodeObj = nodes.find(n => n.id === selectedNodeId);
+    if (!selectedNodeObj) return;
+    
+    const newId = `${selectedNodeObj.type}-${uuidv4().slice(0, 8)}`;
+    const duplicatedNode: Node = {
+      ...selectedNodeObj,
+      id: newId,
+      position: { x: selectedNodeObj.position.x + 50, y: selectedNodeObj.position.y + 50 },
+      selected: true
+    };
+    setNodes(nds => nds.map(n => ({...n, selected: false})).concat(duplicatedNode as any));
+    setSelectedNodeId(newId);
+  }, [selectedNodeId, nodes, setNodes]);
+
+
   // Get selected node object
   const selectedNode = nodes.find((n) => n.id === selectedNodeId) || null;
+
+  const autoConnectGraph = useCallback(() => {
+    setEdges(currentEdges => {
+      const newEdges = [...currentEdges];
+      const getOutgoingEdges = (nodeId: string) => newEdges.filter(e => e.source === nodeId);
+      const getIncomingEdges = (nodeId: string) => newEdges.filter(e => e.target === nodeId);
+
+      const unconnSources = nodes.filter(n => n.type !== 'end' && getOutgoingEdges(n.id).length === 0);
+      const unconnTargets = nodes.filter(n => n.type !== 'start' && getIncomingEdges(n.id).length === 0);
+
+      const sortedSources = [...unconnSources].sort((a,b) => a.position.y - b.position.y);
+      const targetPool = [...unconnTargets];
+
+      sortedSources.forEach(sourceNode => {
+         let bestTargetIndex = -1;
+         let minDistance = Infinity;
+
+         targetPool.forEach((targetNode, index) => {
+            if (targetNode.id === sourceNode.id) return;
+            // Prefer nodes below the current one, but allow slight upward variance
+            const dy = targetNode.position.y - sourceNode.position.y;
+            if (dy > -50) { 
+               const dx = targetNode.position.x - sourceNode.position.x;
+               const dist = Math.sqrt(dx*dx + dy*dy);
+               if (dist < minDistance && dist < 1200) {
+                 minDistance = dist;
+                 bestTargetIndex = index;
+               }
+            }
+         });
+
+         if (bestTargetIndex !== -1) {
+            const targetNode = targetPool[bestTargetIndex];
+            newEdges.push({
+               id: `e-${sourceNode.id}-${targetNode.id}`,
+               source: sourceNode.id,
+               sourceHandle: sourceNode.type === 'decision' ? 'true' : undefined,
+               target: targetNode.id,
+               type: 'smart',
+               animated: false,
+               style: { stroke: '#94a3b8', strokeWidth: 2 }
+            } as any);
+            targetPool.splice(bestTargetIndex, 1);
+         }
+      });
+      return newEdges as any;
+    });
+  }, [nodes, setEdges]);
 
   return {
     nodes,
@@ -344,6 +400,8 @@ export const useWorkflow = () => {
     addNode,
     updateNodeData,
     deleteNode,
+    duplicateSelectedNode,
+    autoConnectGraph,
     serializeGraph,
     handleUndo,
     handleRedo,

@@ -38,9 +38,13 @@ const ApprovalNode = memo(({ id, data, selected }: NodeProps) => {
       <div className="node-content">
         <div className="node-type-label">APPROVAL</div>
         <div className="node-title">{nodeData.title || 'Untitled Approval'}</div>
-        {nodeData.approverRole && (
+        {nodeData.approverRole ? (
           <div className="node-meta">
             <span className="meta-icon"><Key size={12} /></span> {nodeData.approverRole}
+          </div>
+        ) : (
+          <div className="node-meta" style={{ fontStyle: 'italic', opacity: 0.6 }}>
+            <span className="meta-icon"><Key size={12} /></span> Set approver...
           </div>
         )}
         {nodeData.autoApproveThreshold !== undefined && nodeData.autoApproveThreshold > 0 && (

@@ -3,7 +3,7 @@
 
 import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { ClipboardList, User, Calendar } from 'lucide-react';
+import { ClipboardList, User } from 'lucide-react';
 import QuickAddToolbar from './QuickAddToolbar';
 
 interface TaskNodeDataType {
@@ -39,14 +39,13 @@ const TaskNode = memo(({ id, data, selected }: NodeProps) => {
       <div className="node-content">
         <div className="node-type-label">TASK</div>
         <div className="node-title">{nodeData.title || 'Untitled Task'}</div>
-        {nodeData.assignee && (
+        {nodeData.assignee ? (
           <div className="node-meta">
             <span className="meta-icon"><User size={12} /></span> {nodeData.assignee}
           </div>
-        )}
-        {nodeData.dueDate && (
-          <div className="node-meta">
-            <span className="meta-icon"><Calendar size={12} /></span> {nodeData.dueDate}
+        ) : (
+          <div className="node-meta" style={{ fontStyle: 'italic', opacity: 0.6 }}>
+            <span className="meta-icon"><User size={12} /></span> Assign person...
           </div>
         )}
       </div>

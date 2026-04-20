@@ -109,6 +109,12 @@ const WorkflowCanvas = ({
 
   return (
     <div className="canvas-wrapper" ref={reactFlowWrapper}>
+      {nodes.length === 0 && (
+        <div className="empty-canvas-state">
+          <h3>Workflow is empty</h3>
+          <p>Drag nodes from the left sidebar to start building.</p>
+        </div>
+      )}
       <ReactFlow
         nodes={nodesWithState}
         edges={edges}

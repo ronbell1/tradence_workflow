@@ -179,7 +179,18 @@ export function validateWorkflow(nodes: Node[], edges: Edge[]): ValidationResult
   for (const node of disconnected) {
     const data = node.data as Record<string, unknown>;
     const label = (data.title as string) || (data.endMessage as string) || node.id;
-    warnings.push(`Node "${label}" has no outgoing edges`);
+    errors.push(`Node "${label}" has no outgoing edges`);
+  }
+  
+  // 4b. Check Decision node exact branches
+  const decisionNodes = nodes.filter(n => n.type === 'decision');
+  for (const dec of decisionNodes) {
+    const outEdges = edges.filter(e => e.source === dec.id);
+    const hasTrue = outEdges.some(e => e.sourceHandle === 'true');
+    const hasFalse = outEdges.some(e => e.sourceHandle === 'false');
+    if (!hasTrue || !hasFalse) {
+      errors.push(`Decision Node "${(dec.data as Record<string, unknown>).title || dec.id}" must have both "Yes" and "No" outgoing edges connected.`);
+    }
   }
 
   // 5. Check missing required fields
@@ -194,6 +205,19 @@ export function validateWorkflow(nodes: Node[], edges: Edge[]): ValidationResult
   // 6. Check if graph is empty
   if (nodes.length === 0) {
     errors.push('Workflow is empty — add nodes to the canvas');
+  }
+
+  // 7. Detect fully disconnected nodes (no incoming AND no outgoing)
+  if (nodes.length > 1) {
+    const nodesWithOutgoing = new Set(edges.map((e) => e.source));
+    const nodesWithIncoming = new Set(edges.map((e) => e.target));
+    for (const node of nodes) {
+      if (!nodesWithOutgoing.has(node.id) && !nodesWithIncoming.has(node.id)) {
+        const data = node.data as Record<string, unknown>;
+        const label = (data.title as string) || (data.endMessage as string) || node.id;
+        errors.push(`Node "${label}" is completely disconnected — connect it to the workflow`);
+      }
+    }
   }
 
   return {
@@ -241,7 +265,17 @@ export function getNodeValidationStates(
   const nodesWithOutgoing = new Set(edges.map((e) => e.source));
   nodes.forEach((node) => {
     if (node.type !== 'end' && !nodesWithOutgoing.has(node.id)) {
-      states.get(node.id)?.warnings.push('No outgoing connections');
+      states.get(node.id)?.errors.push('No outgoing connections');
+    }
+    
+    // Decision node branch check
+    if (node.type === 'decision') {
+      const outEdges = edges.filter((e) => e.source === node.id);
+      const hasTrue = outEdges.some((e) => e.sourceHandle === 'true');
+      const hasFalse = outEdges.some((e) => e.sourceHandle === 'false');
+      if (!hasTrue || !hasFalse) {
+        states.get(node.id)?.errors.push('Must have both True and False connections');
+      }
     }
   });
 

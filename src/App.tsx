@@ -8,7 +8,7 @@ import WorkflowCanvas from './components/Canvas/WorkflowCanvas';
 import NodePalette from './components/Sidebar/NodePalette';
 import NodeFormPanel from './components/NodeForms/NodeFormPanel';
 import SimulationPanel from './components/Sandbox/SimulationPanel';
-import { Workflow, Undo2, Redo2, LayoutTemplate, Save, FolderOpen, FlaskConical, X, Wand2 } from 'lucide-react';
+import { Workflow, Undo2, Redo2, LayoutTemplate, Save, FolderOpen, FlaskConical, X, Wand2, Trash2, Copy, Link2 } from 'lucide-react';
 import { workflowTemplates } from './data/templates';
 import './App.css';
 
@@ -38,6 +38,8 @@ function AppContent() {
     importWorkflow,
     loadTemplate,
     applyAutoLayout,
+    duplicateSelectedNode,
+    autoConnectGraph,
   } = useWorkflow();
 
   const [showSimulation, setShowSimulation] = useState(false);
@@ -129,6 +131,13 @@ function AppContent() {
             >
               <Wand2 size={16} /> Magic Arrange
             </button>
+            <button
+              onClick={autoConnectGraph}
+              className="btn-toolbar"
+              title="Auto Connect Unlinked Nodes"
+            >
+              <Link2 size={16} /> Auto Connect
+            </button>
             <div className="toolbar-divider"></div>
             <button
               onClick={() => setShowTemplates(!showTemplates)}
@@ -136,6 +145,25 @@ function AppContent() {
               title="Load Template"
             >
               <LayoutTemplate size={16} /> Templates
+            </button>
+            <div className="toolbar-divider"></div>
+
+            {/* Selected Node Actions */}
+            <button
+              onClick={() => selectedNode && duplicateSelectedNode()}
+              disabled={!selectedNode}
+              className="btn-toolbar"
+              title="Duplicate Selected (Ctrl+D)"
+            >
+              <Copy size={16} />
+            </button>
+            <button
+              onClick={() => selectedNode && deleteNode(selectedNode.id)}
+              disabled={!selectedNode}
+              className="btn-toolbar action-danger"
+              title="Delete Selected (Del/Backspace)"
+            >
+              <Trash2 size={16} />
             </button>
             <div className="toolbar-divider"></div>
             <button onClick={exportWorkflow} className="btn-toolbar" title="Export as JSON">

@@ -28,6 +28,7 @@ export default function SmartEdge({
   targetY,
   sourcePosition,
   targetPosition,
+  sourceHandleId,
   style = {},
   markerEnd,
 }: EdgeProps) {
@@ -43,16 +44,26 @@ export default function SmartEdge({
     targetPosition,
   });
 
+  // Determine edge label based on sourceHandle (for decision nodes)
+  let edgeLabel: string | null = null;
+  let edgeLabelColor = '#64748b';
+  if (sourceHandleId === 'true') {
+    edgeLabel = 'Yes';
+    edgeLabelColor = '#22c55e';
+  } else if (sourceHandleId === 'false') {
+    edgeLabel = 'No';
+    edgeLabelColor = '#ef4444';
+  }
+
   const onAddNode = (type: NodeType) => {
     setIsMenuOpen(false);
 
     const newNodeId = `${type}-${uuidv4().slice(0, 8)}`;
     
-    // Default node data mapping based on type
     const defaultData = {
       task: { title: 'New Task', assignee: '', dueDate: '', customFields: [] },
       approval: { title: 'Manager Approval', approverRole: 'Manager' },
-      automated: { title: 'System Action', actionId: '' },
+      automated: { title: '', actionId: '' },
       decision: { title: 'Condition', conditionVariable: '', conditionOperator: 'equals', conditionValue: '' },
       end: { endMessage: 'Workflow Complete', summaryFlag: false },
       start: { title: 'Start', metadata: [] }
@@ -62,7 +73,7 @@ export default function SmartEdge({
       id: newNodeId,
       type,
       position: {
-        x: labelX - 80, // Approximate centering
+        x: labelX - 80,
         y: labelY - 40,
       },
       data: { type, ...defaultData },
@@ -72,6 +83,7 @@ export default function SmartEdge({
     const newEdge1 = {
       id: `e-${source}-${newNodeId}`,
       source,
+      sourceHandle: sourceHandleId,
       target: newNodeId,
       type: 'smart',
       animated: false,
@@ -87,7 +99,6 @@ export default function SmartEdge({
       style: { stroke: '#94a3b8', strokeWidth: 2 },
     };
 
-    // Replace the current edge with two new edges and one new node
     setEdges((es) => es.filter((e) => e.id !== id).concat(newEdge1 as any, newEdge2 as any));
     setNodes((ns) => ns.map(n => ({...n, selected: false})).concat(newNode as any));
   };
@@ -96,6 +107,29 @@ export default function SmartEdge({
     <>
       <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
       <EdgeLabelRenderer>
+        {/* Edge label (Yes/No) for decision branches */}
+        {edgeLabel && (
+          <div
+            style={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${sourceX}px,${sourceY + 18}px)`,
+              fontSize: '10px',
+              fontWeight: 700,
+              color: edgeLabelColor,
+              background: '#fff',
+              padding: '1px 6px',
+              borderRadius: '4px',
+              border: `1px solid ${edgeLabelColor}30`,
+              pointerEvents: 'none',
+              zIndex: 15,
+              letterSpacing: '0.5px',
+            }}
+          >
+            {edgeLabel}
+          </div>
+        )}
+
+        {/* Add node button / menu */}
         <div
           style={{
             position: 'absolute',

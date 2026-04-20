@@ -6,6 +6,19 @@ import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { Zap, Settings } from 'lucide-react';
 import QuickAddToolbar from './QuickAddToolbar';
 
+const ACTION_LABELS: Record<string, string> = {
+  'send-email': 'Send Email',
+  'create-jira': 'Create Jira Ticket',
+  'provision-laptop': 'Provision Laptop',
+  'add-to-slack': 'Add to Slack',
+  'update-hris': 'Update HRIS',
+  'schedule-orientation': 'Schedule Orientation',
+  'send-welcome-kit': 'Send Welcome Kit',
+  'notify-manager': 'Notify Manager',
+  'setup-payroll': 'Setup Payroll',
+  'assign-buddy': 'Assign Buddy',
+};
+
 interface AutomatedNodeDataType {
   title?: string;
   actionId?: string;
@@ -38,9 +51,13 @@ const AutomatedNode = memo(({ id, data, selected }: NodeProps) => {
       <div className="node-content">
         <div className="node-type-label">AUTOMATED</div>
         <div className="node-title">{nodeData.title || 'Untitled Action'}</div>
-        {nodeData.actionId && (
+        {nodeData.actionId ? (
           <div className="node-meta">
-            <span className="meta-icon"><Settings size={12} /></span> {nodeData.actionId}
+            <span className="meta-icon"><Settings size={12} /></span> {ACTION_LABELS[nodeData.actionId] || nodeData.actionId}
+          </div>
+        ) : (
+          <div className="node-meta" style={{ fontStyle: 'italic', opacity: 0.6 }}>
+            <span className="meta-icon"><Settings size={12} /></span> Configure action...
           </div>
         )}
       </div>
