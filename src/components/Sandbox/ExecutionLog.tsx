@@ -1,6 +1,7 @@
 // components/Sandbox/ExecutionLog.tsx — Displays step-by-step simulation results
 
 import type { SimulationStep } from '../../types/api';
+import { CircleCheck, Hourglass, CircleX, Circle, TriangleAlert } from 'lucide-react';
 
 interface ExecutionLogProps {
   steps: SimulationStep[];
@@ -11,13 +12,13 @@ interface ExecutionLogProps {
 const getStatusIcon = (status: string) => {
   switch (status) {
     case 'completed':
-      return '✅';
+      return <CircleCheck size={16} className="text-green-500" />;
     case 'pending':
-      return '⏳';
+      return <Hourglass size={16} className="text-blue-500" />;
     case 'error':
-      return '❌';
+      return <CircleX size={16} className="text-red-500" />;
     default:
-      return '⚪';
+      return <Circle size={16} className="text-gray-400" />;
   }
 };
 
@@ -79,7 +80,7 @@ const ExecutionLog = ({ steps, errors, activeStepIndex }: ExecutionLogProps) => 
 
       {errors.length > 0 && (
         <div className="log-errors">
-          <h4>⚠️ Simulation Errors</h4>
+          <h4><TriangleAlert size={16} className="inline-icon" /> Simulation Errors</h4>
           <ul>
             {errors.map((error, i) => (
               <li key={i} className="error-item">

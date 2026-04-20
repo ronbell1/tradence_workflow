@@ -6,6 +6,7 @@ import TaskNode from './TaskNode';
 import ApprovalNode from './ApprovalNode';
 import AutomatedNode from './AutomatedNode';
 import EndNode from './EndNode';
+import DecisionNode from './DecisionNode';
 
 /**
  * All 5 custom node types registered for React Flow's nodeTypes prop.
@@ -17,4 +18,5 @@ export const nodeTypes: NodeTypes = {
   approval: ApprovalNode,
   automated: AutomatedNode,
   end: EndNode,
+  decision: DecisionNode,
 };

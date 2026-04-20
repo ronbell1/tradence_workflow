@@ -14,7 +14,12 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import { nodeTypes } from '../Nodes';
+import SmartEdge from './SmartEdge';
 import type { NodeType } from '../../types/nodes';
+
+const edgeTypes = {
+  smart: SmartEdge,
+};
 import type { Node, Edge, OnNodesChange, OnEdgesChange, OnConnect } from '@xyflow/react';
 
 interface WorkflowCanvasProps {
@@ -117,14 +122,16 @@ const WorkflowCanvas = ({
         onDragOver={onDragOver}
         onDrop={onDrop}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         connectionLineType={ConnectionLineType.SmoothStep}
         connectionLineStyle={{ stroke: '#94a3b8', strokeWidth: 2 }}
         defaultEdgeOptions={{
-          type: 'smoothstep',
+          type: 'smart',
           animated: false,
           style: { stroke: '#94a3b8', strokeWidth: 2 },
         }}
         fitView
+        fitViewOptions={{ padding: 0.2, minZoom: 0.5, maxZoom: 1 }}
         snapToGrid
         snapGrid={[16, 16]}
         deleteKeyCode={['Backspace', 'Delete']}

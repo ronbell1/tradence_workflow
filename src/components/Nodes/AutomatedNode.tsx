@@ -3,6 +3,8 @@
 
 import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Zap, Settings } from 'lucide-react';
+import QuickAddToolbar from './QuickAddToolbar';
 
 interface AutomatedNodeDataType {
   title?: string;
@@ -13,7 +15,7 @@ interface AutomatedNodeDataType {
   isSimulating?: boolean;
 }
 
-const AutomatedNode = memo(({ data, selected }: NodeProps) => {
+const AutomatedNode = memo(({ id, data, selected }: NodeProps) => {
   const nodeData = data as unknown as AutomatedNodeDataType;
   const hasErrors = nodeData.validationErrors && nodeData.validationErrors.length > 0;
   const hasWarnings = nodeData.validationWarnings && nodeData.validationWarnings.length > 0;
@@ -32,17 +34,23 @@ const AutomatedNode = memo(({ data, selected }: NodeProps) => {
         </div>
       )}
       <Handle type="target" position={Position.Top} className="handle-target" />
-      <div className="node-icon">⚡</div>
+      <div className="node-icon"><Zap size={16} color="#8b5cf6" /></div>
       <div className="node-content">
         <div className="node-type-label">AUTOMATED</div>
         <div className="node-title">{nodeData.title || 'Untitled Action'}</div>
         {nodeData.actionId && (
           <div className="node-meta">
-            <span className="meta-icon">🔧</span> {nodeData.actionId}
+            <span className="meta-icon"><Settings size={12} /></span> {nodeData.actionId}
           </div>
         )}
       </div>
-      <Handle type="source" position={Position.Bottom} className="handle-source" />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="handle-source"
+      />
+      
+      <QuickAddToolbar nodeId={id} isVisible={selected} />
     </div>
   );
 });

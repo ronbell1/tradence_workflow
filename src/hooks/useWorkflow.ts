@@ -16,6 +16,7 @@ import type { NodeType, WorkflowNodeData } from '../types/nodes';
 import type { WorkflowGraph } from '../types/api';
 import { useHistory } from './useHistory';
 import { getNodeValidationStates } from '../utils/graphValidation';
+import { getLayoutedElements } from '../utils/layout';
 
 // Default data factories for each node type
 const createDefaultNodeData = (type: NodeType): WorkflowNodeData => {
@@ -60,6 +61,7 @@ export const useWorkflow = () => {
   >(new Map());
   // Track which node is being animated during simulation
   const [simulatingNodeId, setSimulatingNodeId] = useState<string | null>(null);
+  const [clipboard, setClipboard] = useState<Node | null>(null);
 
   const { pushSnapshot, undo, redo, canUndo, canRedo } = useHistory();
   const isInitialRender = useRef(true);
@@ -85,15 +87,9 @@ export const useWorkflow = () => {
 
   // Connect nodes with smooth step edges
   const onConnect: OnConnect = useCallback(
-    (connection: Connection) => {
-      const newEdge: Edge = {
-        ...connection,
-        id: `e-${connection.source}-${connection.target}-${Date.now()}`,
-        type: 'smoothstep',
-        animated: false,
-        style: { stroke: '#94a3b8', strokeWidth: 2 },
-      };
-      setEdges((eds) => addEdge(newEdge, eds));
+    (params: Connection) => {
+      const edge = { ...params, type: 'smart', style: { stroke: '#94a3b8', strokeWidth: 2 } };
+      setEdges((eds) => addEdge(edge, eds));
     },
     [setEdges]
   );
@@ -242,7 +238,7 @@ export const useWorkflow = () => {
             id: e.id,
             source: e.source,
             target: e.target,
-            type: 'smoothstep',
+            type: 'smart',
             animated: false,
             style: { stroke: '#94a3b8', strokeWidth: 2 },
           }))
@@ -265,6 +261,66 @@ export const useWorkflow = () => {
     },
     [setNodes, setEdges]
   );
+  
+  // Auto format Layout using dagre
+  const applyAutoLayout = useCallback(() => {
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(nodes, edges);
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+  }, [nodes, edges, setNodes, setEdges]);
+  
+  // Handle Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Auto-layout
+      if (e.ctrlKey && e.key === 'i') {
+         e.preventDefault();
+         applyAutoLayout();
+      }
+      
+      if (!selectedNodeId) return;
+
+      // Copy Node Ctrl+C
+      if (e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+        const node = nodes.find(n => n.id === selectedNodeId);
+        if (node) setClipboard(node);
+      }
+
+      // Paste Node Ctrl+V
+      if (e.ctrlKey && (e.key === 'v' || e.key === 'V')) {
+        if (clipboard) {
+          const newId = `${clipboard.type}-${uuidv4().slice(0, 8)}`;
+          const newNode: Node = {
+            ...clipboard,
+            id: newId,
+            position: { x: clipboard.position.x + 20, y: clipboard.position.y + 20 },
+            selected: true
+          };
+          setNodes(nds => nds.map(n => ({...n, selected: false})).concat(newNode as any));
+          setSelectedNodeId(newId);
+        }
+      }
+
+      // Duplicate Node Ctrl+D
+      if (e.ctrlKey && (e.key === 'd' || e.key === 'D')) {
+        e.preventDefault();
+        const selectedNodeObj = nodes.find(n => n.id === selectedNodeId);
+        if (selectedNodeObj) {
+           const newId = `${selectedNodeObj.type}-${uuidv4().slice(0, 8)}`;
+           const duplicatedNode: Node = {
+             ...selectedNodeObj,
+             id: newId,
+             position: { x: selectedNodeObj.position.x + 50, y: selectedNodeObj.position.y + 50 },
+             selected: true
+           };
+           setNodes(nds => nds.map(n => ({...n, selected: false})).concat(duplicatedNode as any));
+           setSelectedNodeId(newId);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [nodes, edges, selectedNodeId, setNodes, applyAutoLayout, clipboard]);
 
   // Get selected node object
   const selectedNode = nodes.find((n) => n.id === selectedNodeId) || null;
@@ -294,6 +350,7 @@ export const useWorkflow = () => {
     exportWorkflow,
     importWorkflow,
     loadTemplate,
+    applyAutoLayout,
     setNodes,
     setEdges,
   };

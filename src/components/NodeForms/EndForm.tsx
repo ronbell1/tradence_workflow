@@ -1,4 +1,5 @@
 // components/NodeForms/EndForm.tsx — End Node configuration form
+import { StopCircle } from 'lucide-react';
 
 interface EndFormProps {
   nodeId: string;
@@ -14,7 +15,7 @@ const EndForm = ({ nodeId, data, onChange, onDelete }: EndFormProps) => {
   return (
     <div className="node-form">
       <div className="form-header">
-        <span className="form-icon">🔴</span>
+        <span className="form-icon"><StopCircle size={18} color="#ef4444" /></span>
         <h3>End Node</h3>
       </div>
 

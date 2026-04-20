@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { KeyValuePair } from '../../types/nodes';
+import { ClipboardList, X } from 'lucide-react';
 
 interface TaskFormProps {
   nodeId: string;
@@ -51,7 +52,7 @@ const TaskForm = ({ nodeId, data, onChange, onDelete }: TaskFormProps) => {
   return (
     <div className="node-form">
       <div className="form-header">
-        <span className="form-icon">📋</span>
+        <span className="form-icon"><ClipboardList size={18} color="#3b82f6" /></span>
         <h3>Task Node</h3>
       </div>
 
@@ -131,7 +132,7 @@ const TaskForm = ({ nodeId, data, onChange, onDelete }: TaskFormProps) => {
               className="btn-icon btn-danger"
               title="Remove"
             >
-              ✕
+              <X size={14} />
             </button>
           </div>
         ))}

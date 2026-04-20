@@ -1,4 +1,5 @@
 // components/NodeForms/ApprovalForm.tsx — Approval Node configuration form
+import { UserCheck } from 'lucide-react';
 
 interface ApprovalFormProps {
   nodeId: string;
@@ -21,7 +22,7 @@ const ApprovalForm = ({ nodeId, data, onChange, onDelete }: ApprovalFormProps) =
   return (
     <div className="node-form">
       <div className="form-header">
-        <span className="form-icon">✅</span>
+        <span className="form-icon"><UserCheck size={18} color="#f59e0b" /></span>
         <h3>Approval Node</h3>
       </div>
 

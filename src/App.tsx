@@ -8,6 +8,7 @@ import WorkflowCanvas from './components/Canvas/WorkflowCanvas';
 import NodePalette from './components/Sidebar/NodePalette';
 import NodeFormPanel from './components/NodeForms/NodeFormPanel';
 import SimulationPanel from './components/Sandbox/SimulationPanel';
+import { Workflow, Undo2, Redo2, LayoutTemplate, Save, FolderOpen, FlaskConical, X, Wand2 } from 'lucide-react';
 import { workflowTemplates } from './data/templates';
 import './App.css';
 
@@ -36,6 +37,7 @@ function AppContent() {
     exportWorkflow,
     importWorkflow,
     loadTemplate,
+    applyAutoLayout,
   } = useWorkflow();
 
   const [showSimulation, setShowSimulation] = useState(false);
@@ -94,7 +96,7 @@ function AppContent() {
       <header className="app-header">
         <div className="header-left">
           <div className="app-logo">
-            <span className="logo-icon">◈</span>
+            <span className="logo-icon"><Workflow size={22} /></span>
             <span className="logo-text">Tredence</span>
             <span className="logo-divider">|</span>
             <span className="logo-sub">HR Workflow Designer</span>
@@ -109,7 +111,7 @@ function AppContent() {
               className="btn-toolbar"
               title="Undo (Ctrl+Z)"
             >
-              ↶
+              <Undo2 size={16} />
             </button>
             <button
               onClick={handleRedo}
@@ -117,7 +119,15 @@ function AppContent() {
               className="btn-toolbar"
               title="Redo (Ctrl+Y)"
             >
-              ↷
+              <Redo2 size={16} />
+            </button>
+            <div className="toolbar-divider"></div>
+            <button
+              onClick={applyAutoLayout}
+              className="btn-toolbar"
+              title="Auto Layout (Ctrl+I)"
+            >
+              <Wand2 size={16} /> Magic Arrange
             </button>
             <div className="toolbar-divider"></div>
             <button
@@ -125,14 +135,14 @@ function AppContent() {
               className="btn-toolbar"
               title="Load Template"
             >
-              📋 Templates
+              <LayoutTemplate size={16} /> Templates
             </button>
             <div className="toolbar-divider"></div>
             <button onClick={exportWorkflow} className="btn-toolbar" title="Export as JSON">
-              💾 Save
+              <Save size={16} /> Save
             </button>
             <button onClick={handleImport} className="btn-toolbar" title="Import JSON">
-              📂 Import
+              <FolderOpen size={16} /> Import
             </button>
             <input
               ref={fileInputRef}
@@ -149,7 +159,7 @@ function AppContent() {
             onClick={() => setShowSimulation(!showSimulation)}
             className={`btn-simulate ${showSimulation ? 'active' : ''}`}
           >
-            🧪 {showSimulation ? 'Close Sandbox' : 'Test Workflow'}
+            <FlaskConical size={16} /> {showSimulation ? 'Close Sandbox' : 'Test Workflow'}
           </button>
         </div>
       </header>
@@ -158,8 +168,8 @@ function AppContent() {
       {showTemplates && (
         <div className="templates-dropdown">
           <div className="templates-header">
-            <h3>📋 Preset Workflow Templates</h3>
-            <button onClick={() => setShowTemplates(false)} className="btn-icon">✕</button>
+            <h3><LayoutTemplate size={14} className="inline-icon" /> Preset Workflow Templates</h3>
+            <button onClick={() => setShowTemplates(false)} className="btn-icon"><X size={18} /></button>
           </div>
           <div className="templates-grid">
             {workflowTemplates.map((template) => (

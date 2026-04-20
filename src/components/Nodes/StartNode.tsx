@@ -3,6 +3,8 @@
 
 import { memo } from 'react';
 import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { CirclePlay } from 'lucide-react';
+import QuickAddToolbar from './QuickAddToolbar';
 
 interface StartNodeDataType {
   title?: string;
@@ -12,7 +14,7 @@ interface StartNodeDataType {
   isSimulating?: boolean;
 }
 
-const StartNode = memo(({ data, selected }: NodeProps) => {
+const StartNode = memo(({ id, data, selected }: NodeProps) => {
   const nodeData = data as unknown as StartNodeDataType;
   const hasErrors = nodeData.validationErrors && nodeData.validationErrors.length > 0;
   const hasWarnings = nodeData.validationWarnings && nodeData.validationWarnings.length > 0;
@@ -30,7 +32,7 @@ const StartNode = memo(({ data, selected }: NodeProps) => {
           {hasErrors ? '!' : '⚠'}
         </div>
       )}
-      <div className="node-icon">🟢</div>
+      <div className="node-icon"><CirclePlay size={16} color="#22c55e" /></div>
       <div className="node-content">
         <div className="node-type-label">START</div>
         <div className="node-title">{nodeData.title || 'Start'}</div>
@@ -40,6 +42,8 @@ const StartNode = memo(({ data, selected }: NodeProps) => {
         position={Position.Bottom}
         className="handle-source"
       />
+      
+      <QuickAddToolbar nodeId={id} isVisible={selected} />
     </div>
   );
 });

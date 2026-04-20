@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { KeyValuePair } from '../../types/nodes';
+import { CirclePlay, X } from 'lucide-react';
 
 interface StartFormProps {
   nodeId: string;
@@ -46,7 +47,7 @@ const StartForm = ({ nodeId, data, onChange, onDelete }: StartFormProps) => {
   return (
     <div className="node-form">
       <div className="form-header">
-        <span className="form-icon">🟢</span>
+        <span className="form-icon"><CirclePlay size={18} color="#22c55e" /></span>
         <h3>Start Node</h3>
       </div>
 
@@ -87,7 +88,7 @@ const StartForm = ({ nodeId, data, onChange, onDelete }: StartFormProps) => {
               className="btn-icon btn-danger"
               title="Remove"
             >
-              ✕
+              <X size={14} />
             </button>
           </div>
         ))}

@@ -2,6 +2,7 @@
 // Dynamic param fields rendered from action.params array (fetched from API)
 
 import { useAutomations } from '../../hooks/useAutomations';
+import { Zap } from 'lucide-react';
 
 interface AutomatedStepFormProps {
   nodeId: string;
@@ -36,7 +37,7 @@ const AutomatedStepForm = ({ nodeId, data, onChange, onDelete }: AutomatedStepFo
   return (
     <div className="node-form">
       <div className="form-header">
-        <span className="form-icon">⚡</span>
+        <span className="form-icon"><Zap size={18} color="#8b5cf6" /></span>
         <h3>Automated Step</h3>
       </div>
 

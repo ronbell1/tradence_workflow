@@ -1,6 +1,6 @@
 // types/nodes.ts — All TypeScript types for workflow nodes
 
-export type NodeType = 'start' | 'task' | 'approval' | 'automated' | 'end';
+export type NodeType = 'start' | 'task' | 'approval' | 'automated' | 'end' | 'decision';
 
 export interface KeyValuePair {
   id: string; // uuid for React key
@@ -39,13 +39,21 @@ export interface EndNodeData {
   summaryFlag: boolean;
 }
 
+export interface DecisionNodeData {
+  title: string;
+  conditionVariable: string;
+  conditionOperator: 'equals' | 'not_equals' | 'greater_than' | 'less_than' | 'contains';
+  conditionValue: string;
+}
+
 // Discriminated union for type-safe node data access
 export type WorkflowNodeData =
   | ({ type: 'start' } & StartNodeData)
   | ({ type: 'task' } & TaskNodeData)
   | ({ type: 'approval' } & ApprovalNodeData)
   | ({ type: 'automated' } & AutomatedNodeData)
-  | ({ type: 'end' } & EndNodeData);
+  | ({ type: 'end' } & EndNodeData)
+  | ({ type: 'decision' } & DecisionNodeData);
 
 // Node form props — generic interface consumed by all form components
 export interface NodeFormProps<T = WorkflowNodeData> {

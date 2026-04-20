@@ -7,6 +7,7 @@ import { validateWorkflow } from '../../utils/graphValidation';
 import { useSimulation } from '../../hooks/useSimulation';
 import type { WorkflowGraph, ValidationResult } from '../../types/api';
 import ExecutionLog from './ExecutionLog';
+import { FlaskConical, CircleX, TriangleAlert, CircleCheck, Play, X } from 'lucide-react';
 
 interface SimulationPanelProps {
   nodes: Node[];
@@ -78,9 +79,9 @@ const SimulationPanel = ({
   return (
     <div className="simulation-panel">
       <div className="sim-panel-header">
-        <h2>🧪 Workflow Sandbox</h2>
+        <h2><FlaskConical size={16} className="inline-icon" /> Workflow Sandbox</h2>
         <button onClick={onClose} className="btn-icon" title="Close">
-          ✕
+          <X size={18} />
         </button>
       </div>
 
@@ -88,7 +89,7 @@ const SimulationPanel = ({
         {/* Validation errors/warnings */}
         {validation && !validation.isValid && (
           <div className="validation-results">
-            <h4>❌ Validation Failed</h4>
+            <h4><CircleX size={14} className="inline-icon" /> Validation Failed</h4>
             <ul className="validation-errors">
               {validation.errors.map((err, i) => (
                 <li key={i} className="val-error">{err}</li>
@@ -99,7 +100,7 @@ const SimulationPanel = ({
 
         {validation && validation.warnings.length > 0 && (
           <div className="validation-warnings">
-            <h4>⚠️ Warnings</h4>
+            <h4><TriangleAlert size={14} className="inline-icon" /> Warnings</h4>
             <ul>
               {validation.warnings.map((warn, i) => (
                 <li key={i} className="val-warning">{warn}</li>
@@ -111,7 +112,7 @@ const SimulationPanel = ({
         {/* API Error */}
         {error && (
           <div className="sim-error">
-            <h4>❌ Simulation Error</h4>
+            <h4><CircleX size={14} className="inline-icon" /> Simulation Error</h4>
             <p>{error}</p>
           </div>
         )}
@@ -128,7 +129,7 @@ const SimulationPanel = ({
         {result && (
           <div className="sim-results">
             <div className="sim-results-header">
-              <h4>{result.success ? '✅ Simulation Complete' : '⚠️ Simulation Completed with Issues'}</h4>
+              <h4>{result.success ? <><CircleCheck size={14} className="inline-icon" /> Simulation Complete</> : <><TriangleAlert size={14} className="inline-icon" /> Simulation Completed with Issues</>}</h4>
               <span className="step-count">{result.steps.length} steps</span>
             </div>
             <ExecutionLog
@@ -146,7 +147,7 @@ const SimulationPanel = ({
           className="btn-primary"
           disabled={loading || isAnimating || nodes.length === 0}
         >
-          {loading ? 'Simulating...' : isAnimating ? 'Playing...' : '▶ Run Simulation'}
+          {loading ? 'Simulating...' : isAnimating ? 'Playing...' : <><Play size={14} className="inline-icon" /> Run Simulation</>}
         </button>
         <button
           onClick={handleReset}

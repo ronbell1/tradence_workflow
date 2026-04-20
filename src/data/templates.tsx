@@ -2,12 +2,14 @@
 // Pre-built graphs for common HR workflows
 
 import type { Node, Edge } from '@xyflow/react';
+import { UserPlus, Plane, FileCheck } from 'lucide-react';
+import * as React from 'react';
 
 interface WorkflowTemplate {
   id: string;
   name: string;
   description: string;
-  icon: string;
+  icon: React.ReactNode;
   nodes: Node[];
   edges: Edge[];
 }
@@ -19,7 +21,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     id: 'onboarding',
     name: 'Employee Onboarding',
     description: 'Standard new hire onboarding workflow',
-    icon: '👋',
+    icon: <UserPlus size={24} className="text-blue-500" />,
     nodes: [
       {
         id: 'start-1',
@@ -94,7 +96,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     id: 'leave-approval',
     name: 'Leave Approval',
     description: 'Employee leave request and approval flow',
-    icon: '🏖️',
+    icon: <Plane size={24} className="text-orange-500" />,
     nodes: [
       {
         id: 'start-1',
@@ -167,7 +169,7 @@ export const workflowTemplates: WorkflowTemplate[] = [
     id: 'document-verification',
     name: 'Document Verification',
     description: 'Employee document verification and processing',
-    icon: '📄',
+    icon: <FileCheck size={24} className="text-purple-500" />,
     nodes: [
       {
         id: 'start-1',
