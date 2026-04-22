@@ -10,9 +10,12 @@ import NodeFormPanel from './components/NodeForms/NodeFormPanel';
 import SimulationPanel from './components/Sandbox/SimulationPanel';
 import DashboardPanel from './components/Dashboard/DashboardPanel';
 import KeyboardHelp from './components/KeyboardHelp/KeyboardHelp';
+import WorkflowChat from './components/Chat/WorkflowChat';
 import { useToast } from './components/Toast/ToastProvider';
 import { validateWorkflow } from './utils/graphValidation';
+import { getLayoutedElements } from './utils/layout';
 import { Workflow, Undo2, Redo2, LayoutTemplate, Save, FolderOpen, FlaskConical, X, Wand2, Trash2, Copy, Link2, BarChart3, Keyboard, HardDriveDownload, CheckCircle2, XCircle, AlertTriangle, Moon, Sun } from 'lucide-react';
+import type { Node, Edge } from '@xyflow/react';
 import { workflowTemplates } from './data/templates';
 import './App.css';
 
@@ -44,6 +47,8 @@ function AppContent() {
     applyAutoLayout,
     duplicateSelectedNode,
     autoConnectGraph,
+    setNodes,
+    setEdges,
   } = useWorkflow();
 
   const { showToast } = useToast();
@@ -145,6 +150,15 @@ function AppContent() {
     setShowTemplates(false);
     showToast(`Loaded: ${template.name}`, 'success');
   }, [loadTemplate, showToast]);
+
+  // Handle workflow generation from chat commands
+  const handleChatGenerate = useCallback((newNodes: Node[], newEdges: Edge[]) => {
+    // Layout the new nodes/edges directly — avoids stale closure from applyAutoLayout
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(newNodes, newEdges);
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+    showToast('Workflow generated from command', 'success');
+  }, [setNodes, setEdges, showToast]);
 
   const handleCloseFormPanel = useCallback(() => {
     onPaneClick();
@@ -372,6 +386,13 @@ function AppContent() {
       {/* Modals */}
       <DashboardPanel isOpen={showDashboard} onClose={() => setShowDashboard(false)} />
       <KeyboardHelp isOpen={showKeyboardHelp} onClose={() => setShowKeyboardHelp(false)} />
+
+      {/* Floating Chat — Quick Workflow Builder */}
+      <WorkflowChat
+        onGenerateWorkflow={handleChatGenerate}
+        existingNodes={nodes}
+        existingEdges={edges}
+      />
     </div>
   );
 }
