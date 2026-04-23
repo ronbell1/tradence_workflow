@@ -1,5 +1,3 @@
-// components/Nodes/index.ts — Node type registry for React Flow
-
 import type { NodeTypes } from '@xyflow/react';
 import StartNode from './StartNode';
 import TaskNode from './TaskNode';
@@ -9,7 +7,7 @@ import EndNode from './EndNode';
 import DecisionNode from './DecisionNode';
 
 /**
- * All 5 custom node types registered for React Flow's nodeTypes prop.
+ * All custom node types registered for React Flow's nodeTypes prop.
  * Adding a new node type = add component + register here.
  */
 export const nodeTypes: NodeTypes = {

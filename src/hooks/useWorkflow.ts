@@ -44,6 +44,8 @@ const createDefaultNodeData = (type: NodeType): WorkflowNodeData => {
       };
     case 'automated':
       return { type: 'automated', title: '', actionId: '', actionParams: {} };
+    case 'decision':
+      return { type: 'decision', title: 'Decision', conditionVariable: '', conditionOperator: 'equals', conditionValue: '' };
     case 'end':
       return { type: 'end', endMessage: '', summaryFlag: false };
     default:
@@ -56,20 +58,9 @@ const createDefaultNodeData = (type: NodeType): WorkflowNodeData => {
  * undo/redo, and graph serialization.
  */
 export const useWorkflow = () => {
-  // Try loading saved workflow from localStorage
-  const savedWorkflow = (() => {
-    try {
-      const saved = localStorage.getItem('hr-workflow-state');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return { nodes: parsed.nodes || [], edges: parsed.edges || [] };
-      }
-    } catch { /* ignore parse errors */ }
-    return { nodes: [], edges: [] };
-  })();
-
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node>(savedWorkflow.nodes as Node[]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(savedWorkflow.edges as Edge[]);
+  // Start with empty arrays to ensure a clean slate on every visit
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [validationStates, setValidationStates] = useState<
     Map<string, { errors: string[]; warnings: string[] }>
@@ -94,15 +85,7 @@ export const useWorkflow = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, edges]);
 
-  // Auto-save to localStorage on every change (debounced)
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      try {
-        localStorage.setItem('hr-workflow-state', JSON.stringify({ nodes, edges }));
-      } catch { /* ignore quota errors */ }
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, [nodes, edges]);
+  // Auto-save to localStorage removed to ensure clean slate
 
   // Recompute validation states whenever nodes/edges change
   useEffect(() => {

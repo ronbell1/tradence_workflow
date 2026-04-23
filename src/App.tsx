@@ -337,6 +337,9 @@ function AppContent() {
             addNode={addNode}
             validationStates={validationStates}
             simulatingNodeId={simulatingNodeId}
+            duplicateNode={duplicateSelectedNode}
+            deleteNode={deleteNode}
+            autoConnectGraph={autoConnectGraph}
           />
         </main>
 

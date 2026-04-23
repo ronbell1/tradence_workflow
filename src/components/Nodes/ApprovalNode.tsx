@@ -59,9 +59,29 @@ const ApprovalNode = memo(({ id, data, selected }: NodeProps) => {
           </div>
         )}
       </div>
-      <Handle type="source" position={Position.Bottom} className="handle-source" />
+      {/* Approved handle — bottom left */}
+      <div className="decision-branch-label" style={{ position: 'absolute', bottom: '-20px', left: '25%', transform: 'translateX(-50%)', fontSize: '10px', fontWeight: 600, color: '#10b981' }}>Approved</div>
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="approved"
+        className="handle-source handle-source-approved"
+        style={{ left: '25%', background: '#10b981' }}
+        isConnectable={true}
+      />
+
+      {/* Rejected handle — bottom right */}
+      <div className="decision-branch-label" style={{ position: 'absolute', bottom: '-20px', left: '75%', transform: 'translateX(-50%)', fontSize: '10px', fontWeight: 600, color: '#ef4444' }}>Rejected</div>
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        id="rejected"
+        className="handle-source handle-source-rejected"
+        style={{ left: '75%', background: '#ef4444' }}
+        isConnectable={true}
+      />
       
-      <QuickAddToolbar nodeId={id} isVisible={selected} />
+      <QuickAddToolbar nodeId={id} isVisible={selected} sourceHandleId="approved" />
     </div>
   );
 });

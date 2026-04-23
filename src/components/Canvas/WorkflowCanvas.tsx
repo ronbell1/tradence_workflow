@@ -1,7 +1,7 @@
 // components/Canvas/WorkflowCanvas.tsx — Main React Flow canvas
 // Central feature: drag-and-drop canvas with all 5 node types
 
-import { useCallback, useRef, type DragEvent } from 'react';
+import { useCallback, useRef, useState, type DragEvent } from 'react';
 import {
   ReactFlow,
   Background,
@@ -15,6 +15,8 @@ import '@xyflow/react/dist/style.css';
 
 import { nodeTypes } from '../Nodes';
 import SmartEdge from './SmartEdge';
+import { ContextMenu } from './ContextMenu';
+import AlignmentToolbar from './AlignmentToolbar';
 import type { NodeType } from '../../types/nodes';
 
 const edgeTypes = {
@@ -34,6 +36,9 @@ interface WorkflowCanvasProps {
   addNode: (type: NodeType, position: { x: number; y: number }) => string;
   validationStates: Map<string, { errors: string[]; warnings: string[] }>;
   simulatingNodeId: string | null;
+  duplicateNode?: () => void;
+  deleteNode?: (id: string) => void;
+  autoConnectGraph?: () => void;
 }
 
 const WorkflowCanvas = ({
@@ -48,21 +53,103 @@ const WorkflowCanvas = ({
   addNode,
   validationStates,
   simulatingNodeId,
+  duplicateNode,
+  deleteNode,
+  autoConnectGraph,
 }: WorkflowCanvasProps) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
+
+  // Context Menu State
+  const [contextMenu, setContextMenu] = useState<{ id: string; top?: number; left?: number; right?: number; bottom?: number } | null>(null);
+
+  // Path Highlighting State
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+
+  // Determine highlighted paths
+  const getHighlightPath = useCallback(() => {
+    if (!hoveredNodeId) return { nodes: new Set(), edges: new Set() };
+    const hNodes = new Set<string>([hoveredNodeId]);
+    const hEdges = new Set<string>();
+
+    const traverseDown = (nodeId: string) => {
+      edges.filter(e => e.source === nodeId).forEach(edge => {
+        if (!hEdges.has(edge.id)) {
+          hEdges.add(edge.id);
+          hNodes.add(edge.target);
+          traverseDown(edge.target);
+        }
+      });
+    };
+
+    const traverseUp = (nodeId: string) => {
+      edges.filter(e => e.target === nodeId).forEach(edge => {
+        if (!hEdges.has(edge.id)) {
+          hEdges.add(edge.id);
+          hNodes.add(edge.source);
+          traverseUp(edge.source);
+        }
+      });
+    };
+
+    traverseDown(hoveredNodeId);
+    traverseUp(hoveredNodeId);
+
+    return { nodes: hNodes, edges: hEdges };
+  }, [hoveredNodeId, edges]);
+
+  const { nodes: highlightNodes, edges: highlightEdges } = getHighlightPath();
+
+  const onNodeContextMenu = useCallback(
+    (event: React.MouseEvent, node: Node) => {
+      event.preventDefault();
+      onNodeClick(event, node); // Select the node so duplicateNode knows what to target
+      const pane = reactFlowWrapper.current?.getBoundingClientRect();
+      if (!pane) return;
+      setContextMenu({
+        id: node.id,
+        top: event.clientY < pane.height - 200 ? event.clientY - pane.top : undefined,
+        left: event.clientX < pane.width - 200 ? event.clientX - pane.left : undefined,
+        bottom: event.clientY >= pane.height - 200 ? pane.bottom - event.clientY : undefined,
+        right: event.clientX >= pane.width - 200 ? pane.right - event.clientX : undefined,
+      });
+    },
+    [setContextMenu]
+  );
+
+  const onPaneClickCloseContextMenu = useCallback(() => {
+    setContextMenu(null);
+    onPaneClick();
+  }, [onPaneClick]);
+
+  const selectedNodes = nodes.filter(n => n.selected);
 
   // Inject validation + simulation state into node data for rendering
   const nodesWithState = nodes.map((node) => {
     const valState = validationStates.get(node.id);
     return {
       ...node,
+      className: `${node.className || ''} ${hoveredNodeId && !highlightNodes.has(node.id) ? 'dimmed' : ''}`,
       data: {
         ...node.data,
         validationErrors: valState?.errors || [],
         validationWarnings: valState?.warnings || [],
         isSimulating: simulatingNodeId === node.id,
       },
+    };
+  });
+
+  const edgesWithState = edges.map((edge) => {
+    let className = edge.className || '';
+    if (hoveredNodeId) {
+      className += highlightEdges.has(edge.id) ? ' highlighted' : ' dimmed';
+    }
+    if (simulatingNodeId && edge.source === simulatingNodeId) {
+      className += ' simulating-path';
+    }
+    return {
+      ...edge,
+      className,
     };
   });
 
@@ -117,12 +204,23 @@ const WorkflowCanvas = ({
       )}
       <ReactFlow
         nodes={nodesWithState}
-        edges={edges}
+        edges={edgesWithState}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        isValidConnection={(connection) => {
+          if (connection.source === connection.target) return false;
+          const targetNode = nodes.find(n => n.id === connection.target);
+          if (targetNode?.type === 'start') return false;
+          const sourceNode = nodes.find(n => n.id === connection.source);
+          if (sourceNode?.type === 'end') return false;
+          return true;
+        }}
         onNodeClick={onNodeClick}
-        onPaneClick={onPaneClick}
+        onNodeContextMenu={onNodeContextMenu}
+        onNodeMouseEnter={(_, node) => setHoveredNodeId(node.id)}
+        onNodeMouseLeave={() => setHoveredNodeId(null)}
+        onPaneClick={onPaneClickCloseContextMenu}
         onNodesDelete={onNodesDelete}
         onInit={onInit}
         onDragOver={onDragOver}
@@ -150,7 +248,7 @@ const WorkflowCanvas = ({
           color="var(--bg-dots)"
         />
         <Controls
-          showInteractive={false}
+          showInteractive={true}
           className="canvas-controls"
         />
         <MiniMap
@@ -160,7 +258,29 @@ const WorkflowCanvas = ({
           pannable
           zoomable
         />
+        {contextMenu && (
+          <ContextMenu
+            {...contextMenu}
+            onClose={() => setContextMenu(null)}
+            onDuplicate={() => {
+              if (duplicateNode) duplicateNode();
+            }}
+            onDelete={(id) => {
+              if (deleteNode) deleteNode(id);
+            }}
+            onAutoConnect={() => {
+              if (autoConnectGraph) autoConnectGraph();
+            }}
+          />
+        )}
       </ReactFlow>
+      
+      <AlignmentToolbar
+        selectedNodes={selectedNodes}
+        onDelete={(nodesToDelete) => {
+          if (deleteNode) nodesToDelete.forEach(n => deleteNode(n.id));
+        }}
+      />
     </div>
   );
 };

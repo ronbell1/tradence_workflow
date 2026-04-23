@@ -37,12 +37,17 @@ It goes beyond drawing boxes and arrows. Every node carries real configuration: 
 ## Features
 
 ### Core Workflow Engine
-- **6 node types** — Start, Task, Approval, Automated, Decision, End
+- **5 node types** — Start, Task, Approval, Automated, Decision, End
 - **Visual decision branching** — diamond-shaped node with Yes/No handles and condition preview
 - **Smart edges** — click the `+` button on any edge to insert a node inline, automatically splitting connections
 - **Quick-add toolbar** — select any node and instantly append the next step via ghost menu
 - **Auto-connect** — drop scattered nodes, hit the toolbar button, and the algorithm connects them logically
 - **Auto-layout (dagre)** — one-click "Magic Arrange" reflows the entire graph
+
+### QuickBuild AI & Chat
+- **Natural Language Generation** — type commands like "leave approval with escalation after 24h" to instantly generate a full workflow layout
+- **Smart Modifiers** — dynamically add "delay", "notification", "rejection flow", and "reminder" steps to existing workflows via the chat widget
+- **Autocomplete & Suggestions** — real-time command suggestions and hints for easy building without memorizing syntax
 
 ### Validation & Simulation
 - **Graph-level validation** — checks for: single Start node, cycles (DFS), disconnected nodes, decision branches, missing fields
@@ -70,6 +75,8 @@ It goes beyond drawing boxes and arrows. Every node carries real configuration: 
 - **Copy/Paste** nodes with `Ctrl+C` / `Ctrl+V`
 
 ### UX Polish
+- **Dark Mode** — full theme toggle using an advanced CSS variable system
+- **Clean UI Layout** — intelligently positioned floating widgets (QuickBuild chat, Minimap, and Controls) to ensure zero overlap and maximize canvas space
 - Empty canvas state — clear guidance when starting fresh
 - Node info density — assignee, role, action, SLA all visible without clicking
 - "Configure..." hints on unconfigured nodes
@@ -97,10 +104,15 @@ src/
 │   │   ├── DecisionNode.tsx         # Decision (orange) — diamond shape, condition preview
 │   │   ├── EndNode.tsx              # End (red) — terminal node
 │   │   └── QuickAddToolbar.tsx      # Ghost menu for one-click node appending
+│   ├── Chat/
+│   │   └── WorkflowChat.tsx         # Floating chat widget for QuickBuild NLP commands
 │   ├── NodeForms/                   # Config panels for each node type
 │   ├── Sidebar/                     # Node palette (drag source)
 │   ├── Sandbox/                     # Simulation panel + execution log
 │   └── Dashboard/                   # Analytics modal with KPIs + live runs
+│
+├── engine/
+│   └── chatCommandEngine.ts         # Keyword-to-workflow mapping logic for QuickBuild
 │
 ├── hooks/
 │   ├── useWorkflow.ts               # Central state — nodes, edges, CRUD, auto-connect, undo
@@ -191,7 +203,7 @@ npm run preview
 
 ### ✅ Completed
 
-- Full 6-node-type workflow builder with drag-and-drop
+- Full 5-node-type workflow builder with drag-and-drop
 - Decision node with diamond shape, condition preview, Yes/No branching
 - SLA deadline tracking on Task and Approval nodes
 - Dynamic checklists on Task nodes
@@ -207,6 +219,9 @@ npm run preview
 - Undo/Redo with history stack
 - Copy/Paste and keyboard shortcuts
 - Empty canvas state
+- QuickBuild natural language command engine for instant workflow generation via chat widget
+- Clean, non-overlapping floating UI controls (Minimap, Canvas Controls, QuickBuild FAB)
+- Fully functional Dark Mode toggle
 - Responsive, premium corporate visual design
 
 ### 🔮 With more time
@@ -220,7 +235,6 @@ npm run preview
 - **File upload fields** — Attach documents to task nodes during execution
 - **Email/Slack integration** — Real notification delivery in automated nodes
 - **Node folding** — Collapse/expand sub-workflows for managing large graphs
-- **Dark mode** — Full theme toggle using existing CSS variable system
 - **Audit trail** — Immutable log of every action taken on a workflow instance
 
 ---

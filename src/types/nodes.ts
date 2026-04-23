@@ -49,6 +49,8 @@ export interface DecisionNodeData {
   conditionValue: string;
 }
 
+
+
 // Discriminated union for type-safe node data access
 export type WorkflowNodeData =
   | ({ type: 'start' } & StartNodeData)

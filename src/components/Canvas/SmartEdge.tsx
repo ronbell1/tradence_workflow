@@ -53,6 +53,12 @@ export default function SmartEdge({
   } else if (sourceHandleId === 'false') {
     edgeLabel = 'No';
     edgeLabelColor = '#ef4444';
+  } else if (sourceHandleId === 'approved') {
+    edgeLabel = 'Approved';
+    edgeLabelColor = '#22c55e';
+  } else if (sourceHandleId === 'rejected') {
+    edgeLabel = 'Rejected';
+    edgeLabelColor = '#ef4444';
   }
 
   const onAddNode = (type: NodeType) => {
